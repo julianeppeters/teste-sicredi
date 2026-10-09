@@ -1,172 +1,147 @@
 import csv
 import json
 import logging
+import sys
 from pathlib import Path
+from typing import Any
 
 
-BASE_DIR = Path(__file__).resolve().parent
-
-INPUT_FILE = BASE_DIR / "solicitacoes.json"
-OUTPUT_FILE = BASE_DIR / "aprovados.csv"
-LOG_FILE = BASE_DIR / "processamento.log"
-
-REQUIRED_FIELDS = {"id", "nome", "cpf", "status"}
+ARQUIVO_ENTRADA = Path("solicitacoes.json")
+ARQUIVO_SAIDA = Path("aprovados.csv")
+ARQUIVO_LOG = Path("processamento.log")
+COLUNAS_CSV = ["id", "nome", "cpf"]
 
 
-def configurar_log() -> logging.Logger:
-    """Configura o arquivo de log da execução."""
-    logger = logging.getLogger("processamento")
-    logger.setLevel(logging.INFO)
-    logger.handlers.clear()
-
-    handler = logging.FileHandler(LOG_FILE, mode="w", encoding="utf-8")
-    handler.setFormatter(
-        logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+def configurar_log() -> None:
+    """Configura o registro das informações de execução."""
+    logging.basicConfig(
+        filename=ARQUIVO_LOG,
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        encoding="utf-8",
+        force=True,
     )
-    logger.addHandler(handler)
-
-    return logger
 
 
-def carregar_json(logger: logging.Logger) -> list:
-    """Carrega os registros do arquivo JSON."""
-    try:
-        with INPUT_FILE.open("r", encoding="utf-8") as arquivo:
-            dados = json.load(arquivo)
-    except FileNotFoundError:
-        logger.error("Arquivo de entrada não encontrado: %s", INPUT_FILE)
-        raise
-    except json.JSONDecodeError as erro:
-        logger.error("JSON inválido: %s", erro)
-        raise
+def carregar_json(caminho: Path = ARQUIVO_ENTRADA) -> list[Any]:
+    """Lê o JSON e confirma que o conteúdo principal é uma lista."""
+    with caminho.open("r", encoding="utf-8") as arquivo:
+        dados = json.load(arquivo)
 
     if not isinstance(dados, list):
-        logger.error("JSON inválido: o conteúdo principal deve ser uma lista.")
-        raise ValueError("O JSON deve conter uma lista de registros.")
+        raise ValueError("A estrutura do JSON deve ser uma lista de solicitações.")
 
     return dados
 
 
-
-def filtrar_aprovados(dados: list, logger: logging.Logger) -> list:
-    """Valida os registros e seleciona os aprovados com CPF preenchido."""
+def filtrar_aprovados(dados: list[Any]) -> tuple[list[dict[str, Any]], int]:
+    """Seleciona registros aprovados com CPF preenchido; ignora registros inválidos."""
     aprovados = []
+    ignorados = 0
 
-    for posicao, registro in enumerate(dados, start=1):
+    for indice, registro in enumerate(dados, start=1):
         if not isinstance(registro, dict):
-            logger.warning(
-                "Registro %d ignorado: formato inválido; "
-                "era esperado um objeto.",
-                posicao,
-            )
+            logging.warning("Registro %s ignorado: formato inválido (não é um objeto).", indice)
+            ignorados += 1
             continue
 
-        campos_faltantes = REQUIRED_FIELDS - registro.keys()
-
-        if campos_faltantes:
-            logger.warning(
-                "Registro %d ignorado: campos ausentes: %s",
-                posicao,
-                ", ".join(sorted(campos_faltantes)),
+        campos_obrigatorios = ("id", "nome", "cpf", "status")
+        faltantes = [campo for campo in campos_obrigatorios if campo not in registro]
+        if faltantes:
+            logging.warning(
+                "Registro %s ignorado: campos ausentes (%s).",
+                indice,
+                ", ".join(faltantes),
             )
+            ignorados += 1
             continue
 
-        identificador = registro["id"]
-        nome = registro["nome"]
-        cpf = registro["cpf"]
-        status = registro["status"]
-
-        if (
-            identificador is None
-            or isinstance(identificador, bool)
-            or not isinstance(identificador, (int, str))
-            or (isinstance(identificador, str) and not identificador.strip())
-        ):
-            logger.warning(
-                "Registro %d ignorado: id inválido ou vazio.",
-                posicao,
-            )
+        cpf = registro.get("cpf")
+        if registro.get("status") != "APROVADO":
+            logging.info("Registro %s ignorado: status diferente de APROVADO.", indice)
+            ignorados += 1
             continue
 
-        if not isinstance(nome, str) or not nome.strip():
-            logger.warning(
-                "Registro %s ignorado: nome inválido ou vazio.",
-                identificador,
-            )
+        if cpf is None or not str(cpf).strip():
+            logging.warning("Registro %s ignorado: CPF vazio ou nulo.", indice)
+            ignorados += 1
             continue
 
-        if not isinstance(status, str) or not status.strip():
-            logger.warning(
-                "Registro %s ignorado: status inválido ou vazio.",
-                identificador,
-            )
-            continue
+        aprovados.append(
+            {
+                "id": registro["id"],
+                "nome": registro["nome"],
+                "cpf": str(cpf).strip(),
+            }
+        )
 
-        if status != "APROVADO":
-            logger.info(
-                "Registro %s ignorado: status '%s'.",
-                identificador,
-                status,
-            )
-            continue
-
-        if not isinstance(cpf, str) or not cpf.strip():
-            logger.warning(
-                "Registro %s ignorado: CPF inválido, vazio ou nulo.",
-                identificador,
-            )
-            continue
-
-        aprovados.append(registro)
-
-    return aprovados
+    return aprovados, ignorados
 
 
-def gerar_csv(registros: list, logger: logging.Logger) -> None:
-    """Gera o arquivo CSV com os registros aprovados."""
+def gerar_csv(registros: list[dict[str, Any]], caminho: Path = ARQUIVO_SAIDA) -> None:
+    """Grava os registros aprovados em CSV UTF-8."""
+    with caminho.open("w", encoding="utf-8-sig", newline="") as arquivo:
+        escritor = csv.DictWriter(arquivo, fieldnames=COLUNAS_CSV)
+        escritor.writeheader()
+        escritor.writerows(registros)
+
+
+def main() -> int:
+    configurar_log()
+    print("Iniciando processamento das solicitações...")
+    logging.info("Início do processamento.")
+
     try:
-        with OUTPUT_FILE.open(
-            "w", newline="", encoding="utf-8"
-        ) as arquivo:
-            escritor = csv.DictWriter(
-                arquivo,
-                fieldnames=["id", "nome", "cpf"],
-                delimiter=",",
-            )
-            escritor.writeheader()
+        dados = carregar_json()
+    except FileNotFoundError:
+        mensagem = f"Erro: arquivo de entrada '{ARQUIVO_ENTRADA}' não encontrado."
+        print(mensagem, file=sys.stderr)
+        logging.exception(mensagem)
+        return 1
+    except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as erro:
+        mensagem = f"Erro ao ler o arquivo JSON: {erro}"
+        print(mensagem, file=sys.stderr)
+        logging.exception(mensagem)
+        return 1
+    except OSError as erro:
+        mensagem = f"Erro ao abrir o arquivo de entrada: {erro}"
+        print(mensagem, file=sys.stderr)
+        logging.exception(mensagem)
+        return 1
 
-            for registro in registros:
-                escritor.writerow(
-                    {
-                        "id": registro["id"],
-                        "nome": registro["nome"],
-                        "cpf": registro["cpf"],
-                    }
-                )
+    logging.info("Total de registros lidos: %s", len(dados))
+    aprovados, ignorados = filtrar_aprovados(dados)
+
+    try:
+        gerar_csv(aprovados)
     except (OSError, csv.Error) as erro:
-        logger.error("Erro durante a geração do CSV: %s", erro)
-        raise
+        mensagem = f"Erro ao gerar '{ARQUIVO_SAIDA}': {erro}"
+        print(mensagem, file=sys.stderr)
+        logging.exception(mensagem)
+        return 1
 
+    logging.info("Total de registros exportados: %s", len(aprovados))
+    logging.info("Total de registros ignorados: %s", ignorados)
+    logging.info("Processamento concluído com sucesso.")
 
-def main() -> None:
-    logger = configurar_log()
-    logger.info("Início do processamento.")
+    print("\nProcessamento concluído com sucesso!")
+    print(f"Solicitações lidas: {len(dados)}")
+    print(f"Solicitações aprovadas exportadas: {len(aprovados)}")
+    print(f"Solicitações ignoradas: {ignorados}")
+    print(f"Arquivo CSV gerado: {ARQUIVO_SAIDA.resolve()}")
+    print(f"Arquivo de log: {ARQUIVO_LOG.resolve()}")
 
-    try:
-        dados = carregar_json(logger)
-        logger.info("Total de registros lidos: %d", len(dados))
+    if aprovados:
+        print("\nRegistros exportados:")
+        print("ID | Nome | CPF")
+        print("-" * 55)
+        for registro in aprovados:
+            print(f"{registro['id']} | {registro['nome']} | {registro['cpf']}")
+    else:
+        print("\nNenhuma solicitação atendeu aos critérios de exportação.")
 
-        aprovados = filtrar_aprovados(dados, logger)
-        gerar_csv(aprovados, logger)
-
-        logger.info("Total de registros exportados: %d", len(aprovados))
-        logger.info("Arquivo gerado: %s", OUTPUT_FILE)
-        logger.info("Processamento concluído com sucesso.")
-
-    except (FileNotFoundError, json.JSONDecodeError, ValueError, OSError, csv.Error) as erro:
-        logger.error("Processamento encerrado com erro: %s", erro)
-        raise
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

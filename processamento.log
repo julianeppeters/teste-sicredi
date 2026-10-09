@@ -11,3 +11,16 @@
 2026-10-08 23:36:18,400 - INFO - Total de registros exportados: 7
 2026-10-08 23:36:18,400 - INFO - Arquivo gerado: C:\Users\ResTIC55\Documents\teste-sicredi\aprovados.csv
 2026-10-08 23:36:18,400 - INFO - Processamento concluído com sucesso.
+2026-10-08 23:43:57,447 - INFO - Início do processamento.
+2026-10-08 23:43:57,448 - INFO - Total de registros lidos: 15
+2026-10-08 23:43:57,448 - WARNING - Registro 2 ignorado: CPF vazio ou nulo.
+2026-10-08 23:43:57,448 - INFO - Registro 3 ignorado: status diferente de APROVADO.
+2026-10-08 23:43:57,448 - INFO - Registro 5 ignorado: status diferente de APROVADO.
+2026-10-08 23:43:57,448 - INFO - Registro 7 ignorado: status diferente de APROVADO.
+2026-10-08 23:43:57,448 - WARNING - Registro 8 ignorado: CPF vazio ou nulo.
+2026-10-08 23:43:57,448 - INFO - Registro 10 ignorado: status diferente de APROVADO.
+2026-10-08 23:43:57,448 - INFO - Registro 11 ignorado: status diferente de APROVADO.
+2026-10-08 23:43:57,448 - INFO - Registro 14 ignorado: status diferente de APROVADO.
+2026-10-08 23:43:57,450 - INFO - Total de registros exportados: 7
+2026-10-08 23:43:57,450 - INFO - Total de registros ignorados: 8
+2026-10-08 23:43:57,451 - INFO - Processamento concluído com sucesso.
