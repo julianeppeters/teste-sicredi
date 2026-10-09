@@ -34,6 +34,8 @@ Os testes automatizados verificam os seguintes comportamentos:
 - Tratamento de registros incompletos, sem interromper o processamento dos registros válidos.
 - Rejeição de registros com `id` nulo, não numérico ou não positivo.
 - Rejeição de registros com `nome` nulo, vazio, composto apenas por espaços ou de tipo incorreto.
+- Rejeição de registros com `status` nulo, vazio, composto apenas por espaços ou de tipo incorreto.
+- Verificação de que registros com status inválido são ignorados sem interromper a exportação de um registro aprovado posterior.
 - Registro dos motivos de rejeição no arquivo `processamento.log`.
 - Tratamento de falhas durante a geração do CSV.
 - Execução do programa a partir de outra pasta, mantendo os arquivos de entrada e saída no diretório do projeto.
