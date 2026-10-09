@@ -47,19 +47,22 @@ def carregar_json(logger: logging.Logger) -> list:
     return dados
 
 
+
 def filtrar_aprovados(dados: list, logger: logging.Logger) -> list:
-    """Filtra registros aprovados que possuem CPF preenchido."""
+    """Valida os registros e seleciona os aprovados com CPF preenchido."""
     aprovados = []
 
     for posicao, registro in enumerate(dados, start=1):
         if not isinstance(registro, dict):
             logger.warning(
-                "Registro %d ignorado: formato inválido; era esperado um objeto.",
+                "Registro %d ignorado: formato inválido; "
+                "era esperado um objeto.",
                 posicao,
             )
             continue
 
         campos_faltantes = REQUIRED_FIELDS - registro.keys()
+
         if campos_faltantes:
             logger.warning(
                 "Registro %d ignorado: campos ausentes: %s",
@@ -68,21 +71,49 @@ def filtrar_aprovados(dados: list, logger: logging.Logger) -> list:
             )
             continue
 
-        status = registro.get("status")
-        cpf = registro.get("cpf")
+        identificador = registro["id"]
+        nome = registro["nome"]
+        cpf = registro["cpf"]
+        status = registro["status"]
+
+        if (
+            identificador is None
+            or isinstance(identificador, bool)
+            or not isinstance(identificador, (int, str))
+            or (isinstance(identificador, str) and not identificador.strip())
+        ):
+            logger.warning(
+                "Registro %d ignorado: id inválido ou vazio.",
+                posicao,
+            )
+            continue
+
+        if not isinstance(nome, str) or not nome.strip():
+            logger.warning(
+                "Registro %s ignorado: nome inválido ou vazio.",
+                identificador,
+            )
+            continue
+
+        if not isinstance(status, str) or not status.strip():
+            logger.warning(
+                "Registro %s ignorado: status inválido ou vazio.",
+                identificador,
+            )
+            continue
 
         if status != "APROVADO":
             logger.info(
                 "Registro %s ignorado: status '%s'.",
-                registro.get("id", posicao),
+                identificador,
                 status,
             )
             continue
 
-        if cpf is None or (isinstance(cpf, str) and not cpf.strip()):
-            logger.info(
-                "Registro %s ignorado: CPF vazio ou nulo.",
-                registro.get("id", posicao),
+        if not isinstance(cpf, str) or not cpf.strip():
+            logger.warning(
+                "Registro %s ignorado: CPF inválido, vazio ou nulo.",
+                identificador,
             )
             continue
 
