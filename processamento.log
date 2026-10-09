@@ -24,3 +24,16 @@
 2026-10-08 23:43:57,450 - INFO - Total de registros exportados: 7
 2026-10-08 23:43:57,450 - INFO - Total de registros ignorados: 8
 2026-10-08 23:43:57,451 - INFO - Processamento concluído com sucesso.
+2026-10-08 23:55:30,095 - INFO - Início do processamento.
+2026-10-08 23:55:30,097 - INFO - Total de registros lidos: 15
+2026-10-08 23:55:30,097 - WARNING - Registro 2 ignorado: CPF inválido, vazio ou nulo.
+2026-10-08 23:55:30,097 - INFO - Registro 3 ignorado: status diferente de APROVADO.
+2026-10-08 23:55:30,097 - INFO - Registro 5 ignorado: status diferente de APROVADO.
+2026-10-08 23:55:30,097 - INFO - Registro 7 ignorado: status diferente de APROVADO.
+2026-10-08 23:55:30,097 - WARNING - Registro 8 ignorado: CPF inválido, vazio ou nulo.
+2026-10-08 23:55:30,097 - INFO - Registro 10 ignorado: status diferente de APROVADO.
+2026-10-08 23:55:30,097 - INFO - Registro 11 ignorado: status diferente de APROVADO.
+2026-10-08 23:55:30,097 - INFO - Registro 14 ignorado: status diferente de APROVADO.
+2026-10-08 23:55:30,099 - INFO - Total de registros exportados: 7
+2026-10-08 23:55:30,099 - INFO - Total de registros ignorados: 8
+2026-10-08 23:55:30,100 - INFO - Processamento concluído com sucesso.
