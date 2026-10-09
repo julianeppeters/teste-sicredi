@@ -89,6 +89,27 @@ class TestProcessamentoSolicitacoes(unittest.TestCase):
             self.assertEqual(resultado.returncode, 0, resultado.stderr)
             self.assertEqual([r["id"] for r in self.ler_csv(pasta / "aprovados.csv")], ["202"])
 
+    def test_ignora_status_nulo_vazio_ou_de_tipo_invalido_sem_interromper(self):
+        dados = [
+            {"id": 701, "nome": "Status nulo", "cpf": "11111111111", "status": None},
+            {"id": 702, "nome": "Status numérico", "cpf": "22222222222", "status": 123},
+            {"id": 703, "nome": "Status vazio", "cpf": "33333333333", "status": ""},
+            {"id": 704, "nome": "Status espaços", "cpf": "44444444444", "status": "   "},
+            {"id": 705, "nome": "Aprovado após inválidos", "cpf": "55555555555", "status": "APROVADO"},
+        ]
+        with tempfile.TemporaryDirectory() as temp:
+            pasta = Path(temp)
+            self.preparar_projeto(pasta, dados)
+            resultado = self.executar_aplicacao(pasta)
+            self.assertEqual(resultado.returncode, 0, resultado.stderr)
+            registros = self.ler_csv(pasta / "aprovados.csv")
+            self.assertEqual([r["id"] for r in registros], ["705"])
+            log = (pasta / "processamento.log").read_text(encoding="utf-8")
+            self.assertIn("status diferente de APROVADO ou inválido", log)
+            for identificador in (701, 702, 703, 704):
+                self.assertIn(f"Registro {identificador} ignorado", log)
+            self.assertIn("Total de registros exportados: 1", log)
+
     def test_json_invalido_encerra_com_erro_e_registra_log(self):
         with tempfile.TemporaryDirectory() as temp:
             pasta = Path(temp)
