@@ -47,7 +47,9 @@ teste-sicredi/
 ```powershell
 python main.py
 ```
+Get-Content aprovados.csv
 
+Get-Content processamento.log
 No Windows, também é possível usar `py main.py`.
 
 Ao terminar, confira os arquivos `aprovados.csv` e `processamento.log` na pasta do projeto.
