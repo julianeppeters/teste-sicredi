@@ -4,9 +4,11 @@ import logging
 from pathlib import Path
 
 
-INPUT_FILE = Path("solicitacoes.json")
-OUTPUT_FILE = Path("aprovados.csv")
-LOG_FILE = Path("processamento.log")
+BASE_DIR = Path(__file__).resolve().parent
+
+INPUT_FILE = BASE_DIR / "solicitacoes.json"
+OUTPUT_FILE = BASE_DIR / "aprovados.csv"
+LOG_FILE = BASE_DIR / "processamento.log"
 
 REQUIRED_FIELDS = {"id", "nome", "cpf", "status"}
 
