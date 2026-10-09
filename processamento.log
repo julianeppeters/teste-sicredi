@@ -1,13 +1,13 @@
-2026-10-08 21:48:30,279 - INFO - Início do processamento.
-2026-10-08 21:48:30,281 - INFO - Total de registros lidos: 15
-2026-10-08 21:48:30,281 - INFO - Registro 2 ignorado: CPF vazio ou nulo.
-2026-10-08 21:48:30,281 - INFO - Registro 3 ignorado: status 'PENDENTE'.
-2026-10-08 21:48:30,281 - INFO - Registro 5 ignorado: status 'PENDENTE'.
-2026-10-08 21:48:30,281 - INFO - Registro 7 ignorado: status 'REPROVADO'.
-2026-10-08 21:48:30,281 - INFO - Registro 8 ignorado: CPF vazio ou nulo.
-2026-10-08 21:48:30,282 - INFO - Registro 10 ignorado: status 'PENDENTE'.
-2026-10-08 21:48:30,282 - INFO - Registro 11 ignorado: status 'REPROVADO'.
-2026-10-08 21:48:30,282 - INFO - Registro 14 ignorado: status 'PENDENTE'.
-2026-10-08 21:48:30,284 - INFO - Total de registros exportados: 7
-2026-10-08 21:48:30,284 - INFO - Arquivo gerado: aprovados.csv
-2026-10-08 21:48:30,284 - INFO - Processamento concluído com sucesso.
+2026-10-08 21:55:50,460 - INFO - Início do processamento.
+2026-10-08 21:55:50,461 - INFO - Total de registros lidos: 15
+2026-10-08 21:55:50,462 - INFO - Registro 2 ignorado: CPF vazio ou nulo.
+2026-10-08 21:55:50,462 - INFO - Registro 3 ignorado: status 'PENDENTE'.
+2026-10-08 21:55:50,462 - INFO - Registro 5 ignorado: status 'PENDENTE'.
+2026-10-08 21:55:50,462 - INFO - Registro 7 ignorado: status 'REPROVADO'.
+2026-10-08 21:55:50,462 - INFO - Registro 8 ignorado: CPF vazio ou nulo.
+2026-10-08 21:55:50,462 - INFO - Registro 10 ignorado: status 'PENDENTE'.
+2026-10-08 21:55:50,463 - INFO - Registro 11 ignorado: status 'REPROVADO'.
+2026-10-08 21:55:50,463 - INFO - Registro 14 ignorado: status 'PENDENTE'.
+2026-10-08 21:55:50,464 - INFO - Total de registros exportados: 7
+2026-10-08 21:55:50,464 - INFO - Arquivo gerado: aprovados.csv
+2026-10-08 21:55:50,465 - INFO - Processamento concluído com sucesso.
