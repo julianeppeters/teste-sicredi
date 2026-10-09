@@ -15,6 +15,7 @@ COLUNAS_CSV = ["id", "nome", "cpf"]
 def configurar_log() -> None:
     logging.basicConfig(
         filename=ARQUIVO_LOG,
+        filemode="w",  # Cada execução começa um log novo, sem misturar versões anteriores.
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s",
         encoding="utf-8",
