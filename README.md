@@ -1,30 +1,24 @@
 
 # teste-sicredi
 Projeto desenvolvido como parte do teste técnico para a vaga de Assistente de Desenvolvimento de Sistemas do Sicredi. O objetivo é aplicar conceitos de programação, organização de código e testes automatizados, contribuindo para a qualidade, confiabilidade e manutenção do software.
-=======
-# Processamento de solicitações em Python
+Processamento de solicitações em Python
+Projeto desenvolvido como parte do teste técnico para a vaga de Assistente de Desenvolvimento de Sistemas do Sicredi. A aplicação lê solicitações de cadastro em um arquivo JSON, seleciona os registros que atendem aos critérios definidos no desafio e gera um arquivo CSV para consulta por outras áreas. O processamento também é registrado em um arquivo de log.
 
-Este projeto foi desenvolvido para o teste técnico de Assistente de Desenvolvimento de Sistemas. A aplicação lê solicitações de um arquivo JSON, aplica as regras de seleção definidas no desafio e gera um CSV com os registros aprovados. Também mantém um log para facilitar a conferência da execução.
+Funcionalidades
 
-## O que o programa faz
+Leitura dos registros de `solicitacoes.json`.
+Seleção de solicitações com status `APROVADO` e CPF não nulo nem vazio.
+Geração do arquivo `aprovados.csv`, com as colunas `id`, `nome` e `cpf`.
+Registro do início e do fim do processamento, dos totais e das ocorrências em `processamento.log`.
+Tratamento de situações como arquivo não encontrado, JSON inválido, registros incompletos e erros na geração do CSV.
+Testes automatizados para verificar o comportamento da aplicação.
+O CPF é tratado como texto, preservando o valor recebido. A validação dos dígitos verificadores não é realizada, pois não faz parte dos requisitos do desafio.
+Tecnologias e pré-requisitos
+Python 3.10 ou superior.
+Bibliotecas nativas do Python, incluindo `csv`, `json`, `logging` e `unittest`.
+Não é necessário instalar bibliotecas externas.
 
-- Lê os dados de `solicitacoes.json`.
-- Seleciona registros cujo status seja exatamente `APROVADO`.
-- Ignora registros com CPF nulo ou vazio.
-- Gera `aprovados.csv` com as colunas `id`, `nome` e `cpf`.
-- Registra informações do processamento e ocorrências em `processamento.log`.
-- Trata problemas como arquivo ausente, JSON inválido, estrutura inesperada e falhas na geração do CSV.
-
-O CPF é tratado como texto para preservar o valor recebido. A aplicação não valida os dígitos verificadores do CPF, pois essa verificação não faz parte das regras consideradas neste desafio.
-
-## Tecnologias
-
-- Python 3.10 ou superior
-- Bibliotecas nativas: `csv`, `json`, `logging` e `unittest`
-
-Não é necessário instalar dependências externas.
-
-## Estrutura do projeto
+Estrutura do projeto
 
 ```text
 teste-sicredi/
@@ -32,72 +26,62 @@ teste-sicredi/
 ├── test_main.py
 ├── solicitacoes.json
 ├── README.md
+├── README_TESTES.md
 ├── aprovados.csv
 └── processamento.log
 ```
+Os arquivos `aprovados.csv` e `processamento.log` são gerados durante a execução. Eles também podem estar presentes no repositório como exemplos do resultado produzido.
 
-`aprovados.csv` e `processamento.log` são gerados durante a execução. Caso ainda não existam, serão criados pelo programa conforme o comportamento implementado.
+Como executar
 
-## Como executar
-
-1. Tenha o Python 3.10 ou superior instalado.
-2. Abra o terminal na pasta do projeto.
-3. Execute:
-
+Instale o Python 3.10 ou superior.
+Abra o terminal na pasta do projeto.
+Execute:
 ```powershell
 python main.py
 ```
+No Windows, se o comando `python` não estiver disponível, tente:
+```powershell
+py main.py
+```
+Após a execução, confira os arquivos gerados no diretório do projeto. Para visualizar seu conteúdo no PowerShell, use:
+```powershell
 Get-Content aprovados.csv
-
 Get-Content processamento.log
-No Windows, também é possível usar `py main.py`.
+```
 
-Ao terminar, confira os arquivos `aprovados.csv` e `processamento.log` na pasta do projeto.
+Como executar os testes automatizados
 
-## Como executar os testes automatizados
-
-Os testes utilizam o `unittest`, que já faz parte do Python. Na raiz do projeto, execute:
-
+Os testes usam o módulo `unittest`, incluído na instalação padrão do Python. Na pasta do projeto, execute:
 ```powershell
 python -m unittest -v test_main.py
 ```
-
-No Windows, também é possível usar:
-
+No Windows, também é possível executar:
 ```powershell
 py -m unittest -v test_main.py
 ```
+O terminal apresenta o resultado de cada teste. A mensagem `OK` indica que os testes executados terminaram sem falhas.
+Os testes verificam cenários de processamento dos dados, geração do CSV, seleção de registros aprovados, CPF vazio, JSON inválido e registros incompletos. Consulte `README_TESTES.md` para informações adicionais sobre os testes.
 
-O terminal mostra quais testes foram executados e o resultado de cada um. A mensagem `OK` indica que os testes executados terminaram sem falhas.
+Regras de seleção
 
-Os cenários descritos para os testes incluem:
+Um registro é exportado somente quando atende aos dois critérios:
+O campo `status` é igual a `APROVADO`.
+O campo `cpf` está presente e não é nulo nem vazio.
+Registros que não atendem aos critérios ou que apresentam problemas de estrutura são ignorados conforme as regras implementadas, e as ocorrências relevantes são registradas no log. Um registro inválido não deve interromper o processamento dos demais registros válidos.
 
-- processamento dos dados de entrada;
-- geração do CSV;
-- exportação somente de registros aprovados;
-- descarte de registros com CPF vazio;
-- tratamento de JSON inválido;
-- tratamento de registros incompletos;
-- preservação dos registros válidos quando outros registros precisam ser ignorados.
+Resultado esperado para o arquivo fornecido
 
-## Regras de seleção
+Para os dados de exemplo incluídos no desafio, são esperados 7 registros no arquivo `aprovados.csv`, com os IDs `1, 4, 6, 9, 12, 13 e 15`.
+O CSV utiliza vírgula como separador e é gravado em UTF-8, com as colunas na ordem `id`, `nome`, `cpf`.
 
-Um registro é exportado quando:
+Organização da solução
 
-1. O campo `status` é exatamente `APROVADO`.
-2. O CPF não é nulo nem vazio.
+O código foi organizado em funções para separar responsabilidades, como leitura dos dados, aplicação dos critérios, geração do CSV e coordenação do processamento. Essa divisão facilita a leitura, a manutenção e a realização de testes.
 
-Os registros que não atendem a esses critérios não devem aparecer no CSV final. As ocorrências relevantes são registradas no log.
+Possível integração com um processo BPM
 
-## Resultado esperado para os dados do desafio
+Em um processo de BPM (Business Process Management), os dados poderiam ser recebidos por um formulário conectado ao fluxo de trabalho. Após o envio, o sistema registraria a solicitação e a encaminharia para a etapa de aprovação. Quando uma pessoa responsável aprovasse o cadastro, o processo chamaria uma rotina equivalente à deste projeto para validar os campos necessários e incluir o registro no CSV. Solicitações pendentes ou reprovadas não seriam exportadas. O fluxo também poderia registrar o responsável e a data da decisão, manter histórico das etapas e notificar a área responsável em caso de falha.
+Esta implementação é executada localmente a partir de um arquivo JSON; ela não integra diretamente uma plataforma BPM.
 
-De acordo com as regras descritas para o arquivo de entrada fornecido, são esperados 7 registros no CSV, com os IDs `1, 4, 6, 9, 12, 13 e 15`.
-
-Depois de executar o programa, confira se esses registros aparecem no `aprovados.csv` e se as colunas estão na ordem `id`, `nome`, `cpf`.
-
-## Organização do código
-
-O processamento foi dividido em funções para separar as responsabilidades: carregar os dados, aplicar as regras, gerar o CSV e coordenar a execução. Essa organização facilita a leitura, a manutenção e a verificação das regras por meio dos testes automatizados.
-
-A solução roda localmente a partir de um arquivo JSON. A referência a BPM é uma possibilidade de uso dessa lógica em um fluxo maior; o projeto não integra diretamente uma plataforma BPM.
-
+A documentação oficial do Python pode ser consultada para esclarecer o uso de módulos como `csv`, `json`, `logging` e `unittest`. O ChatGPT foi utilizado como apoio na revisão e organização da documentação. A implementação, as decisões adotadas e os resultados devem ser compreendidos e conferidos pela pessoa candidata, que poderá explicar o funcionamento do código durante a entrevista.
