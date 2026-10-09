@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # teste-sicredi
 Projeto desenvolvido como parte do teste técnico para a vaga de Assistente de Desenvolvimento de Sistemas do Sicredi. O objetivo é aplicar conceitos de programação, organização de código e testes automatizados, contribuindo para a qualidade, confiabilidade e manutenção do software.
 =======
@@ -98,4 +98,4 @@ Depois de executar o programa, confira se esses registros aparecem no `aprovados
 O processamento foi dividido em funções para separar as responsabilidades: carregar os dados, aplicar as regras, gerar o CSV e coordenar a execução. Essa organização facilita a leitura, a manutenção e a verificação das regras por meio dos testes automatizados.
 
 A solução roda localmente a partir de um arquivo JSON. A referência a BPM é uma possibilidade de uso dessa lógica em um fluxo maior; o projeto não integra diretamente uma plataforma BPM.
->>>>>>> 7f44112 (docs: atualiza README do projeto)
+
