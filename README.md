@@ -1,8 +1,7 @@
 
-# teste-sicredi
-Projeto desenvolvido como parte do teste técnico para a vaga de Assistente de Desenvolvimento de Sistemas do Sicredi. O objetivo é aplicar conceitos de programação, organização de código e testes automatizados, contribuindo para a qualidade, confiabilidade e manutenção do software.
-Processamento de solicitações em Python
-Projeto desenvolvido como parte do teste técnico para a vaga de Assistente de Desenvolvimento de Sistemas do Sicredi. A aplicação lê solicitações de cadastro em um arquivo JSON, seleciona os registros que atendem aos critérios definidos no desafio e gera um arquivo CSV para consulta por outras áreas. O processamento também é registrado em um arquivo de log.
+# Teste Técnico Sicredi: Processamento de Solicitações em Python
+
+Projeto desenvolvido para o teste técnico da vaga de Assistente de Desenvolvimento de Sistemas do Sicredi. A aplicação lê solicitações de cadastro em JSON, seleciona os registros aprovados que possuem CPF preenchido e gera um arquivo CSV para utilização por outras áreas. O processamento e as ocorrências são registrados em um arquivo de log, e testes automatizados verificam os principais cenários de funcionamento e erro.
 
 Funcionalidades
 
