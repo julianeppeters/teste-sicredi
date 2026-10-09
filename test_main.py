@@ -181,6 +181,41 @@ class TestProcessamentoSolicitacoes(unittest.TestCase):
             self.assertIn("Processamento encerrado com erro", log)
             self.assertFalse((pasta / "aprovados.csv").exists())
 
+
+    def test_ignora_id_nulo_invalido_ou_nao_positivo(self):
+        dados = [
+            {"id": None, "nome": "ID nulo", "cpf": "11111111111", "status": "APROVADO"},
+            {"id": "abc", "nome": "ID texto", "cpf": "22222222222", "status": "APROVADO"},
+            {"id": 0, "nome": "ID zero", "cpf": "33333333333", "status": "APROVADO"},
+            {"id": 506, "nome": "ID válido", "cpf": "44444444444", "status": "APROVADO"},
+        ]
+        with tempfile.TemporaryDirectory() as temp:
+            pasta = Path(temp)
+            self.preparar_projeto(pasta, dados)
+            resultado = self.executar_aplicacao(pasta)
+            self.assertEqual(resultado.returncode, 0, resultado.stderr)
+            self.assertEqual([r["id"] for r in self.ler_csv(pasta / "aprovados.csv")], ["506"])
+            log = (pasta / "processamento.log").read_text(encoding="utf-8")
+            self.assertIn("campo id inválido", log)
+
+    def test_ignora_nome_nulo_vazio_ou_de_tipo_invalido(self):
+        dados = [
+            {"id": 601, "nome": None, "cpf": "11111111111", "status": "APROVADO"},
+            {"id": 602, "nome": "   ", "cpf": "22222222222", "status": "APROVADO"},
+            {"id": 603, "nome": 123, "cpf": "33333333333", "status": "APROVADO"},
+            {"id": 604, "nome": " Nome válido ", "cpf": "44444444444", "status": "APROVADO"},
+        ]
+        with tempfile.TemporaryDirectory() as temp:
+            pasta = Path(temp)
+            self.preparar_projeto(pasta, dados)
+            resultado = self.executar_aplicacao(pasta)
+            self.assertEqual(resultado.returncode, 0, resultado.stderr)
+            registros = self.ler_csv(pasta / "aprovados.csv")
+            self.assertEqual([r["id"] for r in registros], ["604"])
+            self.assertEqual(registros[0]["nome"], "Nome válido")
+            log = (pasta / "processamento.log").read_text(encoding="utf-8")
+            self.assertIn("campo nome inválido", log)
+
     def test_execucao_a_partir_de_outra_pasta(self):
         with tempfile.TemporaryDirectory() as temp:
             raiz = Path(temp)
