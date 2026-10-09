@@ -28,10 +28,13 @@ Os testes automatizados verificam os seguintes comportamentos:
 - Geração do arquivo `aprovados.csv` com as colunas `id`, `nome` e `cpf`.
 - Exportação somente de registros com status `APROVADO`.
 - Rejeição de registros com CPF vazio, nulo ou composto apenas por espaços.
-- Tratamento de arquivos JSON com sintaxe inválida.
+- Tratamento de JSON com sintaxe inválida, incluindo encerramento com erro e registro da ocorrência no log.
 - Tratamento de JSON válido com estrutura diferente da esperada.
-- Tratamento de arquivo de entrada inexistente.
+- Tratamento de arquivo de entrada inexistente, com registro do erro no log.
 - Tratamento de registros incompletos, sem interromper o processamento dos registros válidos.
+- Rejeição de registros com `id` nulo, não numérico ou não positivo.
+- Rejeição de registros com `nome` nulo, vazio, composto apenas por espaços ou de tipo incorreto.
+- Registro dos motivos de rejeição no arquivo `processamento.log`.
 - Tratamento de falhas durante a geração do CSV.
 - Execução do programa a partir de outra pasta, mantendo os arquivos de entrada e saída no diretório do projeto.
 
