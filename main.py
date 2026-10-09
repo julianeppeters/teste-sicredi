@@ -15,7 +15,6 @@ COLUNAS_CSV = ["id", "nome", "cpf"]
 def configurar_log() -> None:
     logging.basicConfig(
         filename=ARQUIVO_LOG,
-        filemode="w",  # Cada execução começa um log novo, sem misturar versões anteriores.
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s",
         encoding="utf-8",
@@ -37,11 +36,13 @@ def filtrar_aprovados(dados: list[Any]) -> tuple[list[dict[str, Any]], int]:
 
     for indice, registro in enumerate(dados, start=1):
         if not isinstance(registro, dict):
-            logging.warning("Registro %s ignorado: formato inválido (não é um objeto).", indice)
+            logging.warning(
+                "Registro %s ignorado: formato inválido (não é um objeto).", indice
+            )
             ignorados += 1
             continue
 
-        identificador = registro.get("id", indice)
+        identificador = registro.get("id", f"posição {indice}")
         campos_obrigatorios = ("id", "nome", "cpf", "status")
         faltantes = [campo for campo in campos_obrigatorios if campo not in registro]
         if faltantes:
@@ -52,13 +53,36 @@ def filtrar_aprovados(dados: list[Any]) -> tuple[list[dict[str, Any]], int]:
             ignorados += 1
             continue
 
-        cpf = registro.get("cpf")
-        if registro.get("status") != "APROVADO":
-            logging.info("Registro %s ignorado: status diferente de APROVADO.", identificador)
+        # Presença do campo não basta: os valores também precisam ser utilizáveis.
+        id_registro = registro.get("id")
+        if isinstance(id_registro, bool) or not isinstance(id_registro, int) or id_registro <= 0:
+            logging.warning(
+                "Registro %s ignorado: campo id inválido; deve ser um inteiro positivo.",
+                identificador
+            )
             ignorados += 1
             continue
 
-        if cpf is None or not str(cpf).strip():
+        nome = registro.get("nome")
+        if not isinstance(nome, str) or not nome.strip():
+            logging.warning(
+                "Registro %s ignorado: campo nome inválido, vazio ou nulo.",
+                identificador
+            )
+            ignorados += 1
+            continue
+
+        status = registro.get("status")
+        if not isinstance(status, str) or status.strip() != "APROVADO":
+            logging.info(
+                "Registro %s ignorado: status diferente de APROVADO ou inválido.",
+                identificador
+            )
+            ignorados += 1
+            continue
+
+        cpf = registro.get("cpf")
+        if cpf is None or not isinstance(cpf, str) or not cpf.strip():
             logging.warning(
                 "Registro %s ignorado: CPF inválido, vazio ou nulo.", identificador
             )
@@ -66,9 +90,9 @@ def filtrar_aprovados(dados: list[Any]) -> tuple[list[dict[str, Any]], int]:
             continue
 
         aprovados.append({
-            "id": registro["id"],
-            "nome": registro["nome"],
-            "cpf": str(cpf).strip(),
+            "id": id_registro,
+            "nome": nome.strip(),
+            "cpf": cpf.strip(),
         })
 
     return aprovados, ignorados
